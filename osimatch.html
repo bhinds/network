@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OSI Layer Match Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+    }
+    #game {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .layer, .item {
+      border: 2px dashed #ccc;
+      padding: 15px;
+      width: 200px;
+      min-height: 80px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+    .layer {
+      flex: 1 1 250px;
+    }
+    .item {
+      cursor: grab;
+      background-color: #e3f2fd;
+      font-weight: bold;
+    }
+    .correct {
+      border-color: green;
+      background-color: #d4edda !important;
+    }
+    .wrong {
+      border-color: red;
+      background-color: #f8d7da !important;
+    }
+    #items {
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>OSI Layer Match – Drag the Items to the Correct Layer</h2>
+
+  <div id="items"></div>
+
+  <div id="game"></div>
+
+  <button onclick="resetGame()">Reset Game</button>
+
+  <script>
+    const layers = [
+      "Application", "Presentation", "Session",
+      "Transport", "Network", "Data Link", "Physical"
+    ];
+
+    const items = [
+      { label: "HTTP", layer: "Application" },
+      { label: "SSL/TLS", layer: "Presentation" },
+      { label: "NetBIOS", layer: "Session" },
+      { label: "TCP", layer: "Transport" },
+      { label: "IP", layer: "Network" },
+      { label: "Switch", layer: "Data Link" },
+      { label: "Ethernet Cable", layer: "Physical" },
+      { label: "Router", layer: "Network" },
+      { label: "MAC Address", layer: "Data Link" },
+      { label: "DNS", layer: "Application" }
+    ];
+
+    let shuffledItems = [];
+
+    function createGame() {
+      const itemsContainer = document.getElementById('items');
+      const gameContainer = document.getElementById('game');
+
+      itemsContainer.innerHTML = '';
+      gameContainer.innerHTML = '';
+      shuffledItems = [...items].sort(() => 0.5 - Math.random());
+
+      // Create draggable items
+      shuffledItems.forEach((item, i) => {
+        const el = document.createElement('div');
+        el.className = 'item';
+        el.textContent = item.label;
+        el.setAttribute('draggable', true);
+        el.setAttribute('data-layer', item.layer);
+        el.id = `item-${i}`;
+        el.addEventListener('dragstart', dragStart);
+        itemsContainer.appendChild(el);
+      });
+
+      // Create layer drop zones
+      layers.forEach(layer => {
+        const zone = document.createElement('div');
+        zone.className = 'layer';
+        zone.setAttribute('data-layer', layer);
+        zone.innerHTML = `<strong>${layer} Layer</strong>`;
+        zone.addEventListener('dragover', allowDrop);
+        zone.addEventListener('drop', drop);
+        gameContainer.appendChild(zone);
+      });
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+    }
+
+    function dragStart(e) {
+      e.dataTransfer.setData("text", e.target.id);
+    }
+
+    function drop(e) {
+      e.preventDefault();
+      const itemId = e.dataTransfer.getData("text");
+      const draggedEl = document.getElementById(itemId);
+      const targetLayer = e.currentTarget.getAttribute('data-layer');
+      const correctLayer = draggedEl.getAttribute('data-layer');
+
+      if (targetLayer === correctLayer) {
+        e.currentTarget.appendChild(draggedEl);
+        draggedEl.classList.add("correct");
+        draggedEl.setAttribute("draggable", false);
+      } else {
+        draggedEl.classList.add("wrong");
+        setTimeout(() => draggedEl.classList.remove("wrong"), 800);
+      }
+    }
+
+    function resetGame() {
+      createGame();
+    }
+
+    createGame();
+  </script>
+
+</body>
+</html>

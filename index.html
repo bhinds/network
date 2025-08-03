@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Networking Port Quiz</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+      background-color: #2b2b2b;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #4af626;
+      animation: glow 2s infinite;
+    }
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 5px #4af626; }
+      50% { text-shadow: 0 0 20px #4af626; }
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    .answers button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #333;
+      color: #fff;
+      border: 2px solid #4af626;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .answers button.correct {
+      background-color: #4caf50;
+    }
+    .answers button.incorrect {
+      background-color: #f44336;
+    }
+    .answers button:hover {
+      background-color: #444;
+    }
+    .score {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #leaderboard {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .restart {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .restart button {
+      background: #4af626;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Networking Port Quiz</h1>
+    <div id="quiz">
+      <p class="question" id="question">Loading question...</p>
+      <div class="answers" id="answers"></div>
+    </div>
+    <div class="score" id="scoreBoard"></div>
+    <div id="leaderboard"></div>
+    <div class="restart">
+      <button onclick="restartGame()">Restart Quiz</button>
+    </div>
+  </div>
+  <script>
+    const questions = [
+      { q: "What port does SSH use?", a: "22", options: ["23", "22", "80", "443"] },
+      { q: "What port is used for HTTP?", a: "80", options: ["443", "80", "21", "25"] },
+      { q: "What port is used for HTTPS?", a: "443", options: ["53", "110", "443", "25"] },
+      { q: "What port is used by FTP control?", a: "21", options: ["20", "21", "22", "23"] },
+      { q: "What port does DNS use?", a: "53", options: ["53", "67", "80", "443"] },
+      { q: "What port does SMTP use for basic sending?", a: "25", options: ["25", "110", "143", "465"] },
+      { q: "What port does POP3 use?", a: "110", options: ["143", "110", "993", "995"] },
+      { q: "What port does IMAP use?", a: "143", options: ["143", "110", "25", "993"] },
+      { q: "What port does RDP use?", a: "3389", options: ["3389", "22", "23", "443"] },
+      { q: "What port does Telnet use?", a: "23", options: ["22", "23", "21", "80"] },
+      { q: "What port does TFTP use?", a: "69", options: ["69", "21", "20", "80"] },
+      { q: "What port does NetBIOS name service use?", a: "137", options: ["137", "138", "139", "445"] },
+      { q: "What port does NetBIOS datagram service use?", a: "138", options: ["137", "138", "139", "445"] },
+      { q: "What port does NetBIOS session service use?", a: "139", options: ["137", "138", "139", "445"] },
+      { q: "What port does SMB use?", a: "445", options: ["139", "445", "138", "20"] },
+      { q: "What port does LDAP use?", a: "389", options: ["389", "636", "88", "49"] },
+      { q: "What port does LDAPS use?", a: "636", options: ["636", "389", "443", "49"] },
+      { q: "What port does Kerberos use?", a: "88", options: ["88", "389", "636", "445"] },
+      { q: "What port does TACACS+ use?", a: "49", options: ["49", "88", "389", "636"] },
+      { q: "What port does NTP use?", a: "123", options: ["123", "514", "161", "162"] },
+      { q: "What port does SNMP use?", a: "161", options: ["161", "162", "514", "443"] },
+      { q: "What port does SNMP trap use?", a: "162", options: ["161", "162", "514", "443"] },
+      { q: "What port does Syslog use?", a: "514", options: ["514", "123", "161", "443"] }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("question").textContent = q.q;
+      const answerDiv = document.getElementById("answers");
+      answerDiv.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.onclick = () => selectAnswer(btn, opt === q.a);
+        answerDiv.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(button, isCorrect) {
+      if (isCorrect) {
+        score++;
+        button.classList.add("correct");
+      } else {
+        button.classList.add("incorrect");
+      }
+      Array.from(document.querySelectorAll(".answers button")).forEach(btn => btn.disabled = true);
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          loadQuestion();
+        } else {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("scoreBoard").textContent = `🎉 You scored ${score} out of ${questions.length}`;
+      updateLeaderboard(score);
+    }
+
+    function restartGame() {
+      current = 0;
+      score = 0;
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("scoreBoard").textContent = "";
+      loadQuestion();
+    }
+
+    function updateLeaderboard(score) {
+      const highscore = localStorage.getItem("portQuizHighscore") || 0;
+      if (score > highscore) {
+        localStorage.setItem("portQuizHighscore", score);
+      }
+      document.getElementById("leaderboard").textContent = `🏆 High Score: ${localStorage.getItem("portQuizHighscore")}`;
+    }
+
+    window.onload = () => loadQuestion();
+  </script>
+</body>
+</html>

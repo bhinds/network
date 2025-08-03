@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Network Class Identifier Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #101820;
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      color: #00d4ff;
+    }
+    .question {
+      font-size: 1.5rem;
+      margin: 2rem 0;
+    }
+    .toggle-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .toggle-button {
+      background: #333;
+      border: 2px solid #00d4ff;
+      border-radius: 10px;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .toggle-button:hover {
+      background: #00d4ff;
+      color: #000;
+    }
+    .feedback {
+      margin-top: 2rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .correct {
+      color: limegreen;
+    }
+    .wrong {
+      color: crimson;
+    }
+    .score {
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Network Class Toggle Game</h1>
+  <div class="question" id="question">What class is: <span id="subnet">255.255.0.0</span>?</div>
+  <div class="toggle-group">
+    <button class="toggle-button" onclick="checkAnswer('A')">Class A</button>
+    <button class="toggle-button" onclick="checkAnswer('B')">Class B</button>
+    <button class="toggle-button" onclick="checkAnswer('C')">Class C</button>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="score" id="score">Score: 0/0</div>
+
+  <script>
+    const questions = [
+      { subnet: '255.0.0.0', answer: 'A' },
+      { subnet: '255.255.0.0', answer: 'B' },
+      { subnet: '255.255.255.0', answer: 'C' },
+      { subnet: '255.255.255.128', answer: 'C' },
+      { subnet: '255.255.240.0', answer: 'B' },
+      { subnet: '255.0.0.0', answer: 'A' },
+      { subnet: '255.224.0.0', answer: 'A' },
+      { subnet: '255.255.255.192', answer: 'C' },
+      { subnet: '255.255.252.0', answer: 'B' },
+      { subnet: '255.192.0.0', answer: 'A' }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let total = 0;
+    const totalQuestions = 10;
+
+    const shuffledQuestions = [...questions].sort(() => 0.5 - Math.random()).slice(0, totalQuestions);
+
+    function loadQuestion() {
+      if (currentIndex >= totalQuestions) {
+        document.getElementById('question').textContent = '🎉 Game Over!';
+        document.getElementById('subnet').textContent = '';
+        document.querySelector('.toggle-group').style.display = 'none';
+        document.getElementById('feedback').textContent = `Final Score: ${score}/${total}`;
+        return;
+      }
+      const q = shuffledQuestions[currentIndex];
+      document.getElementById('subnet').textContent = q.subnet;
+      document.getElementById('subnet').dataset.answer = q.answer;
+      document.getElementById('feedback').textContent = '';
+    }
+
+    function checkAnswer(selected) {
+      const correct = document.getElementById('subnet').dataset.answer;
+      total++;
+      if (selected === correct) {
+        score++;
+        document.getElementById('feedback').textContent = '✅ Correct!';
+        document.getElementById('feedback').className = 'feedback correct';
+      } else {
+        document.getElementById('feedback').textContent = `❌ Try again! (Answer: Class ${correct})`;
+        document.getElementById('feedback').className = 'feedback wrong';
+      }
+      document.getElementById('score').textContent = `Score: ${score}/${total}`;
+      currentIndex++;
+      setTimeout(loadQuestion, 1500);
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>

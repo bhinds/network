@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wi-Fi Standards Speed Match</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+      margin: 0;
+    }
+    #game {
+      max-width: 960px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .instructions {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      justify-items: center;
+      margin-bottom: 30px;
+    }
+    .standard {
+      width: 100%;
+      min-height: 80px;
+      padding: 12px;
+      border: 2px dashed #bbb;
+      background-color: #fafafa;
+      border-radius: 8px;
+      position: relative;
+      transition: 0.2s;
+    }
+    .standard h4 {
+      margin: 0;
+      color: #444;
+    }
+    .drop-target {
+      margin-top: 8px;
+      min-height: 30px;
+      font-weight: bold;
+      color: #000;
+    }
+    .speed {
+      padding: 10px 15px;
+      background-color: #e0f0ff;
+      border: 2px solid #3399ff;
+      border-radius: 6px;
+      cursor: grab;
+      margin: 8px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .speed:active {
+      cursor: grabbing;
+    }
+    .feedback {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .correct {
+      border-color: #28a745;
+      background-color: #d4edda;
+    }
+    .wrong {
+      border-color: #dc3545;
+      background-color: #f8d7da;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #3399ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #267bd9;
+    }
+  </style>
+</head>
+<body>
+<div id="game">
+  <h2>📶 Wi-Fi Standards Speed Match</h2>
+  <p class="instructions">Drag each speed to the correct Wi-Fi standard below.</p>
+
+  <div class="board" id="standards">
+    <div class="standard" data-answer="11 Mbps">
+      <h4>802.11b</h4>
+      <div class="drop-target"></div>
+    </div>
+    <div class="standard" data-answer="54 Mbps">
+      <h4>802.11g</h4>
+      <div class="drop-target"></div>
+    </div>
+    <div class="standard" data-answer="600 Mbps">
+      <h4>802.11n (Wi-Fi 4)</h4>
+      <div class="drop-target"></div>
+    </div>
+    <div class="standard" data-answer="6.9 Gbps">
+      <h4>802.11ac (Wi-Fi 5)</h4>
+      <div class="drop-target"></div>
+    </div>
+    <div class="standard" data-answer="9.6 Gbps">
+      <h4>802.11ax (Wi-Fi 6)</h4>
+      <div class="drop-target"></div>
+    </div>
+    <div class="standard" data-answer="7 Gbps">
+      <h4>802.11ad</h4>
+      <div class="drop-target"></div>
+    </div>
+  </div>
+
+  <div class="board" id="speeds">
+    <div class="speed" draggable="true">11 Mbps</div>
+    <div class="speed" draggable="true">54 Mbps</div>
+    <div class="speed" draggable="true">600 Mbps</div>
+    <div class="speed" draggable="true">6.9 Gbps</div>
+    <div class="speed" draggable="true">9.6 Gbps</div>
+    <div class="speed" draggable="true">7 Gbps</div>
+  </div>
+
+  <button onclick="checkMatch()">Check Answers</button>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<script>
+  const speeds = document.querySelectorAll('.speed');
+  const standards = document.querySelectorAll('.standard');
+
+  speeds.forEach(speed => {
+    speed.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', speed.textContent);
+    });
+  });
+
+  standards.forEach(standard => {
+    const target = standard.querySelector('.drop-target');
+    standard.addEventListener('dragover', e => {
+      e.preventDefault();
+    });
+    standard.addEventListener('drop', e => {
+      e.preventDefault();
+      const dropped = e.dataTransfer.getData('text/plain');
+      target.textContent = dropped;
+      standard.setAttribute('data-user', dropped);
+      target.classList.remove('correct', 'wrong');
+    });
+  });
+
+  function checkMatch() {
+    let correctCount = 0;
+    standards.forEach(s => {
+      const expected = s.getAttribute('data-answer');
+      const actual = s.getAttribute('data-user');
+      const target = s.querySelector('.drop-target');
+
+      if (expected === actual) {
+        target.classList.add('correct');
+        target.classList.remove('wrong');
+        correctCount++;
+      } else {
+        target.classList.add('wrong');
+        target.classList.remove('correct');
+      }
+    });
+
+    const feedback = document.getElementById('feedback');
+    if (correctCount === standards.length) {
+      feedback.textContent = '🎉 All matches correct! Great job!';
+      feedback.style.color = '#28a745';
+    } else {
+      feedback.textContent = `✅ ${correctCount} correct out of ${standards.length}. Try again!`;
+      feedback.style.color = '#dc3545';
+    }
+  }
+</script>
+</body>
+</html>

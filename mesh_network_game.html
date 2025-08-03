@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mesh Network Math</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 { color: #0077cc; }
+    .hint {
+      font-size: 1rem;
+      color: #555;
+      margin-top: 1rem;
+      font-style: italic;
+      display: none;
+    }
+    .question { margin: 1.5rem 0; font-size: 1.2rem; }
+    .input-group { margin-bottom: 1rem; }
+    input[type="number"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 100px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0.25rem;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .feedback {
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+    .correct { color: green; }
+    .wrong { color: red; }
+    .end-message { font-size: 1.4rem; color: #28a745; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>Mesh Network Math</h1>
+  <button onclick="toggleHint()" id="hintBtn">Show Hint</button>
+  <p class="hint" id="hint">Hint: Use the formula <strong>W = n(n - 1) / 2</strong>, where <strong>n</strong> is the number of nodes.</p>
+
+  <div class="question" id="question"></div>
+  <div class="input-group">
+    <input type="number" id="answer" placeholder="Enter answer" />
+    <button onclick="submitAnswer()">Submit</button>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div class="end-message" id="endMessage"></div>
+
+  <script>
+    let score = 0;
+    let totalQuestions = 10;
+    let currentNodeCount = 0;
+
+    function generateQuestion() {
+      currentNodeCount = Math.floor(Math.random() * 11) + 3; // 3 to 13 nodes
+      document.getElementById("question").innerText =
+        `How many connections are needed for a full mesh network with ${currentNodeCount} nodes?`;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").innerText = "";
+    }
+
+    function toggleHint() {
+      const hint = document.getElementById("hint");
+      const button = document.getElementById("hintBtn");
+      if (hint.style.display === "none" || hint.style.display === "") {
+        hint.style.display = "block";
+        button.textContent = "Hide Hint";
+      } else {
+        hint.style.display = "none";
+        button.textContent = "Show Hint";
+      }
+    }
+
+    function submitAnswer() {
+      const userAnswer = parseInt(document.getElementById("answer").value);
+      const correctAnswer = (currentNodeCount * (currentNodeCount - 1)) / 2;
+      const feedback = document.getElementById("feedback");
+
+      if (userAnswer === correctAnswer) {
+        feedback.innerText = "✅ Correct! Well done!";
+        feedback.className = "feedback correct";
+        score++;
+      } else {
+        feedback.innerText = `❌ Incorrect. The correct formula is W = n(n - 1) / 2.`;
+        feedback.className = "feedback wrong";
+        return;
+      }
+
+      if (score >= totalQuestions) {
+        document.getElementById("endMessage").innerText = "🎉 Great Job! You’ve mastered mesh networking!";
+        document.querySelector(".input-group").style.display = "none";
+        document.getElementById("question").style.display = "none";
+      } else {
+        setTimeout(generateQuestion, 1200);
+      }
+    }
+
+    // Start the game
+    generateQuestion();
+  </script>
+</body>
+</html>

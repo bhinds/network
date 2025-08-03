@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Easy Subnetting Challenge</title>
+  <style>
+    body { font-family: sans-serif; background: #eef1f5; padding: 20px; }
+    #game { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    .input-group { margin: 15px 0; }
+    label { font-weight: bold; }
+    input { width: 100%; padding: 10px; margin-top: 5px; font-size: 1rem; }
+    button { padding: 10px 20px; margin-top: 10px; font-size: 1rem; width: 100%; }
+    #feedback { margin-top: 15px; font-size: 1.1rem; }
+    .hint { font-size: 0.9rem; color: #555; }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h2>🧠 Easy Subnetting Practice</h2>
+    <p><strong>Given:</strong> <span id="ipDisplay"></span></p>
+
+    <div class="input-group">
+      <label for="network">Network Address:</label>
+      <input id="network" />
+    </div>
+
+    <div class="input-group">
+      <label for="broadcast">Broadcast Address:</label>
+      <input id="broadcast" />
+    </div>
+
+    <div class="input-group">
+      <label for="hosts"># of Usable Hosts:</label>
+      <input id="hosts" type="number" />
+      <div class="hint">Hint: 2<sup>host bits</sup> - 2</div>
+    </div>
+
+    <button id="submit">Submit</button>
+    <p id="feedback"></p>
+    <button id="next">Next Question</button>
+  </div>
+
+  <script>
+    const ipDisplay = document.getElementById('ipDisplay');
+    const networkInput = document.getElementById('network');
+    const broadcastInput = document.getElementById('broadcast');
+    const hostsInput = document.getElementById('hosts');
+    const feedback = document.getElementById('feedback');
+    const submitBtn = document.getElementById('submit');
+    const nextBtn = document.getElementById('next');
+
+    let current = {};
+
+    function randomEasySubnet() {
+      const cidrs = [24, 25, 26];
+      const mask = cidrs[Math.floor(Math.random() * cidrs.length)];
+      const block = Math.floor(Math.random() * (256 - (1 << (32 - mask))));
+      const ip = `192.168.1.${block}`;
+      return { ip, mask };
+    }
+
+    function calculate(ip, mask) {
+      const ipParts = ip.split('.').map(Number);
+      const ipNum = ipParts.reduce((sum, n) => (sum << 8) + n, 0);
+      const maskBits = mask;
+      const maskNum = (~0 << (32 - maskBits)) >>> 0;
+      const netNum = ipNum & maskNum;
+      const broadcastNum = netNum | (~maskNum >>> 0);
+      const usable = maskBits < 31 ? (1 << (32 - maskBits)) - 2 : 0;
+      const numToIp = n => [(n>>>24)&255, (n>>>16)&255, (n>>>8)&255, n&255].join('.');
+      return {
+        net: numToIp(netNum),
+        broadcast: numToIp(broadcastNum),
+        hosts: usable
+      };
+    }
+
+    function loadQuestion() {
+      feedback.textContent = '';
+      networkInput.value = '';
+      broadcastInput.value = '';
+      hostsInput.value = '';
+
+      const subnet = randomEasySubnet();
+      current = calculate(subnet.ip, subnet.mask);
+      ipDisplay.textContent = `${subnet.ip}/${subnet.mask}`;
+    }
+
+    submitBtn.onclick = () => {
+      const nw = networkInput.value.trim();
+      const bc = broadcastInput.value.trim();
+      const hs = parseInt(hostsInput.value);
+
+      if (nw === current.net && bc === current.broadcast && hs === current.hosts) {
+        feedback.textContent = '✅ Correct! Great job!';
+        feedback.style.color = 'green';
+      } else {
+        feedback.textContent = `❌ Incorrect.\n Correct Answers:\nNetwork: ${current.net}, Broadcast: ${current.broadcast}, Hosts: ${current.hosts}`;
+        feedback.style.color = 'red';
+      }
+    };
+
+    nextBtn.onclick = () => {
+      loadQuestion();
+    };
+
+    loadQuestion(); // Start first question
+  </script>
+</body>
+</html>

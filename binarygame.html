@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Binary Toggle Game</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #eee;
+      font-family: monospace;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .bit-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .bit {
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: 2px solid #555;
+      background-color: #222;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .bit.on {
+      background-color: #4CAF50;
+    }
+
+    #binaryValue, #feedback, #score {
+      margin-top: 1rem;
+      font-size: 1.3rem;
+    }
+
+    #newNumberBtn {
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔢 Binary Toggle Game</h1>
+  <p>Convert the decimal number into binary by toggling the bits.</p>
+  <div id="decimalPrompt">Target Decimal: <strong id="targetNumber"></strong></div>
+
+  <div class="bit-container" id="bitContainer"></div>
+
+  <div id="binaryValue">Your Binary: <span id="currentBinary">00000000</span></div>
+  <div id="feedback"></div>
+  <div id="score">Score: 0</div>
+
+  <button id="newNumberBtn" onclick="newChallenge()">🎯 New Number</button>
+
+  <script>
+    let target = 0;
+    let score = 0;
+    const bitCount = 8;
+    const bits = [];
+
+    const container = document.getElementById('bitContainer');
+    const binaryDisplay = document.getElementById('currentBinary');
+    const feedback = document.getElementById('feedback');
+    const targetDisplay = document.getElementById('targetNumber');
+    const scoreDisplay = document.getElementById('score');
+
+    function createBits() {
+      container.innerHTML = '';
+      bits.length = 0;
+      for (let i = 0; i < bitCount; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'bit';
+        btn.textContent = '0';
+        btn.dataset.index = i;
+        btn.onclick = () => toggleBit(i);
+        container.appendChild(btn);
+        bits.push(0);
+      }
+    }
+
+    function toggleBit(index) {
+      bits[index] = bits[index] === 0 ? 1 : 0;
+      updateBitsUI();
+      checkAnswer();
+    }
+
+    function updateBitsUI() {
+      const buttons = container.querySelectorAll('.bit');
+      let binStr = '';
+      for (let i = 0; i < bitCount; i++) {
+        buttons[i].textContent = bits[i];
+        if (bits[i] === 1) {
+          buttons[i].classList.add('on');
+        } else {
+          buttons[i].classList.remove('on');
+        }
+        binStr += bits[i];
+      }
+      binaryDisplay.textContent = binStr;
+    }
+
+    function bitsToDecimal() {
+      return parseInt(bits.join(''), 2);
+    }
+
+    function checkAnswer() {
+      if (bitsToDecimal() === target) {
+        feedback.innerHTML = '<span style="color:lime">✅ Correct!</span>';
+        score++;
+        scoreDisplay.textContent = `Score: ${score}`;
+      } else {
+        feedback.innerHTML = '';
+      }
+    }
+
+    function newChallenge() {
+      target = Math.floor(Math.random() * 256);
+      targetDisplay.textContent = target;
+      bits.fill(0);
+      updateBitsUI();
+      feedback.textContent = '';
+    }
+
+    createBits();
+    newChallenge();
+  </script>
+</body>
+</html>

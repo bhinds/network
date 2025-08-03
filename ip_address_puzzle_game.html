@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Address Puzzle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .game-board {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 30px 0;
+    }
+    .slot, .tile {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slot {
+      background: #ddd;
+      border: 2px dashed #888;
+    }
+    .tile {
+      background: #007bff;
+      color: #fff;
+      cursor: grab;
+    }
+    .tiles {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .hidden {
+      display: none;
+    }
+    #feedback {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>IP Address Puzzle</h1>
+  <p>Drag the octets into the correct order to form the IP address: <strong>192.168.0.1</strong></p>
+  <div class="game-board" id="board"></div>
+  <div class="tiles" id="tiles"></div>
+  <div id="feedback"></div>
+
+  <script>
+    const correctOrder = ['192', '168', '0', '1'];
+    let currentOrder = ['', '', '', ''];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function createBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      for (let i = 0; i < 4; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.dataset.index = i;
+        slot.addEventListener('dragover', (e) => e.preventDefault());
+        slot.addEventListener('drop', handleDrop);
+        board.appendChild(slot);
+      }
+    }
+
+    function createTiles() {
+      const tiles = document.getElementById('tiles');
+      tiles.innerHTML = '';
+      const shuffled = shuffle([...correctOrder]);
+      shuffled.forEach(value => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.textContent = value;
+        tile.draggable = true;
+        tile.addEventListener('dragstart', handleDragStart);
+        tiles.appendChild(tile);
+      });
+    }
+
+    function handleDragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.textContent);
+    }
+
+    function handleDrop(e) {
+      const data = e.dataTransfer.getData('text/plain');
+      const index = e.target.dataset.index;
+      e.target.textContent = data;
+      e.target.style.background = '#c8f7c5';
+      currentOrder[index] = data;
+      checkAnswer();
+    }
+
+    function checkAnswer() {
+      const feedback = document.getElementById('feedback');
+      if (currentOrder.every((val, i) => val === correctOrder[i])) {
+        feedback.textContent = '✅ Correct IP Address!';
+        feedback.style.color = 'green';
+      } else if (currentOrder.every(val => val !== '')) {
+        feedback.textContent = '❌ Incorrect, try again!';
+        feedback.style.color = 'red';
+      }
+    }
+
+    createBoard();
+    createTiles();
+  </script>
+</body>
+</html>

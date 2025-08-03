@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MAC vs IP Identification Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      padding: 20px;
+      color: #333;
+    }
+    #game {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      width: 100%;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .options button:hover {
+      background-color: #e8f0fe;
+    }
+    .correct {
+      background-color: #d4edda !important;
+      border-color: #28a745 !important;
+    }
+    .wrong {
+      background-color: #f8d7da !important;
+      border-color: #dc3545 !important;
+    }
+    #feedback {
+      margin-top: 15px;
+      font-size: 1.1rem;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h2>🔍 MAC vs IP Identification</h2>
+    <div class="question" id="questionText">Loading question...</div>
+    <div class="options" id="optionsContainer"></div>
+    <div id="feedback"></div>
+    <button id="nextBtn">Next Question</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "Which address is burned into your network card and never changes?",
+        options: ["MAC Address", "IP Address"],
+        answer: "MAC Address"
+      },
+      {
+        text: "Which address can change depending on the network you connect to?",
+        options: ["MAC Address", "IP Address"],
+        answer: "IP Address"
+      },
+      {
+        text: "Which address looks like 192.168.1.1?",
+        options: ["IP Address", "MAC Address"],
+        answer: "IP Address"
+      },
+      {
+        text: "Which address looks like 00:1A:2B:3C:4D:5E?",
+        options: ["MAC Address", "IP Address"],
+        answer: "MAC Address"
+      },
+      {
+        text: "Which address is used by routers to deliver packets over the Internet?",
+        options: ["IP Address", "MAC Address"],
+        answer: "IP Address"
+      },
+      {
+        text: "Which address is used by switches to forward frames in a LAN?",
+        options: ["MAC Address", "IP Address"],
+        answer: "MAC Address"
+      },
+      {
+        text: "Which address is part of the Data Link layer of the OSI model?",
+        options: ["MAC Address", "IP Address"],
+        answer: "MAC Address"
+      },
+      {
+        text: "Which address is dynamically assigned by DHCP?",
+        options: ["IP Address", "MAC Address"],
+        answer: "IP Address"
+      },
+    ];
+
+    let currentQuestion = 0;
+
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function loadQuestion() {
+      feedback.textContent = '';
+      optionsContainer.innerHTML = '';
+      const q = questions[currentQuestion];
+      questionText.textContent = q.text;
+
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(btn, opt === q.answer);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(button, isCorrect) {
+      const buttons = optionsContainer.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (isCorrect) {
+        button.classList.add('correct');
+        feedback.textContent = "✅ Correct!";
+        feedback.style.color = "#28a745";
+      } else {
+        button.classList.add('wrong');
+        feedback.textContent = "❌ Incorrect. Correct answer: " + questions[currentQuestion].answer;
+        feedback.style.color = "#dc3545";
+      }
+    }
+
+    nextBtn.onclick = () => {
+      currentQuestion++;
+      if (currentQuestion >= questions.length) {
+        questionText.textContent = "🎉 You've completed the quiz!";
+        optionsContainer.innerHTML = '';
+        feedback.textContent = '';
+        nextBtn.disabled = true;
+        nextBtn.textContent = "Done!";
+      } else {
+        loadQuestion();
+      }
+    };
+
+    loadQuestion();
+  </script>
+</body>
+</html>

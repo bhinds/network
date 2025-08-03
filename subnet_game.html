@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IPv4 Subnet Game</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 1em; }
+    .question { margin-bottom: 1em; }
+    input { width: 200px; padding: 0.5em; margin-right: 0.5em; }
+    .feedback { margin-top: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>IPv4 Subnet Game</h1>
+  <div>Score: <span id="score">0</span></div>
+  <div id="game">
+    <button onclick="newQuestion()">Start</button>
+  </div>
+
+<script>
+let score = 0;
+const game = document.getElementById('game');
+function newQuestion() {
+  const prefix = [8,16,24,26,28,30][Math.floor(Math.random()*6)];
+  const max = (1 << (32 - prefix)) - 1;
+  const host = Math.floor(Math.random() * (max - 2)) + 1;
+  const net = (host >> (32 - prefix)) << (32 - prefix);
+  const bcast = net | ((1 << (32 - prefix)) - 1);
+
+  function toIP(n){
+    return [24,16,8,0].map(o => (n>>o)&255).join('.');
+  }
+
+  game.innerHTML = `
+    <div class="question">
+      <strong>Given host:</strong> ${toIP(host)} /${prefix}<br><br>
+      Network: <input id="net" placeholder="a.b.c.d"> 
+      Broadcast: <input id="bcast" placeholder="a.b.c.d">
+      <button onclick="check()">Check</button>
+      <div id="fb" class="feedback"></div>
+    </div>`;
+  
+  window.check = () => {
+    const uNet = document.getElementById('net').value.trim();
+    const uB = document.getElementById('bcast').value.trim();
+    const fb = document.getElementById('fb');
+    let ok = true;
+    if (uNet !== toIP(net)) { fb.innerHTML = "❌ Network should be " + toIP(net); ok=false; }
+    if (uB !== toIP(bcast)) { fb.innerHTML += "<br>❌ Broadcast should be " + toIP(bcast); ok=false; }
+    if (ok) {
+      score++;
+      document.getElementById('score').textContent = score;
+      fb.innerHTML = "✅ Correct! Generating next...";
+      setTimeout(newQuestion, 1000);
+    }
+  };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiber Types & Lengths Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    .game-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .slide {
+      display: none;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    .question {
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 6px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fiber Types & Lengths Quiz</h1>
+  <div class="game-container">
+    <div class="slide active">
+      <div class="question">1. Max length of <strong>Single-mode fiber (SMF)</strong>?</div>
+      <select id="q1">
+        <option value="">-- Select an answer --</option>
+        <option value="10km">10 km or more</option>
+        <option value="300m">300 meters</option>
+        <option value="2km">2 kilometers</option>
+      </select>
+    </div>
+
+    <div class="slide">
+      <div class="question">2. Max length of <strong>Multi-mode OM1</strong>?</div>
+      <select id="q2">
+        <option value="">-- Select an answer --</option>
+        <option value="300m">300 meters</option>
+        <option value="550m">550 meters</option>
+        <option value="2km">2 kilometers</option>
+      </select>
+    </div>
+
+    <div class="slide">
+      <div class="question">3. Max length of <strong>Multi-mode OM2</strong>?</div>
+      <select id="q3">
+        <option value="">-- Select an answer --</option>
+        <option value="550m">550 meters</option>
+        <option value="2km">2 kilometers</option>
+        <option value="600m">600 meters</option>
+      </select>
+    </div>
+
+    <div class="slide">
+      <div class="question">4. Max length of <strong>Multi-mode OM3 @ 10Gbps</strong>?</div>
+      <select id="q4">
+        <option value="">-- Select an answer --</option>
+        <option value="300m">300 meters</option>
+        <option value="550m">550 meters</option>
+        <option value="1km">1 kilometer</option>
+      </select>
+    </div>
+
+    <div class="slide">
+      <div class="question">5. Max length of <strong>Multi-mode OM4 @ 10Gbps</strong>?</div>
+      <select id="q5">
+        <option value="">-- Select an answer --</option>
+        <option value="400m">400 meters</option>
+        <option value="550m">550 meters</option>
+        <option value="600m">600 meters</option>
+      </select>
+    </div>
+
+    <div class="slide">
+      <div class="question">6. Max length of <strong>OS2 (Single-mode)</strong>?</div>
+      <select id="q6">
+        <option value="">-- Select an answer --</option>
+        <option value="10km">10 km or more</option>
+        <option value="2km">2 kilometers</option>
+        <option value="550m">550 meters</option>
+      </select>
+    </div>
+
+    <button onclick="nextSlide()" id="nextBtn">Next</button>
+    <button onclick="checkAnswers()" id="checkBtn" style="display:none;">Check Answers</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const answers = {
+      q1: "10km",
+      q2: "300m",
+      q3: "550m",
+      q4: "300m",
+      q5: "550m",
+      q6: "10km"
+    };
+
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const nextBtn = document.getElementById('nextBtn');
+    const checkBtn = document.getElementById('checkBtn');
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+      nextBtn.style.display = index < slides.length - 1 ? 'inline-block' : 'none';
+      checkBtn.style.display = index === slides.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function checkAnswers() {
+      let score = 0;
+      Object.keys(answers).forEach(key => {
+        const userAnswer = document.getElementById(key).value;
+        if (userAnswer === answers[key]) score++;
+      });
+
+      const result = document.getElementById("result");
+      if (score === Object.keys(answers).length) {
+        result.textContent = "✅ Perfect! All answers are correct.";
+        result.style.color = "green";
+      } else {
+        result.textContent = `❌ You got ${score} out of ${Object.keys(answers).length} correct. Try again.`;
+        result.style.color = "red";
+      }
+    }
+
+    showSlide(currentSlide);
+  </script>
+</body>
+</html>

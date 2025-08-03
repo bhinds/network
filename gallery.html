@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎮 Network Game Gallery</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      background: #222;
+      color: white;
+      padding: 20px 0;
+      font-size: 2rem;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .game-card {
+      background: white;
+      border: 2px solid #333;
+      padding: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .game-card:hover {
+      transform: scale(1.05);
+      background: #ffe600;
+    }
+
+    iframe {
+      width: 90%;
+      height: 600px;
+      border: 3px solid #333;
+      border-radius: 10px;
+      margin: 20px auto;
+      display: none;
+    }
+
+    #gameFrameWrapper {
+      text-align: center;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background: crimson;
+    }
+  </style>
+</head>
+<body>
+
+<header>🎮 Network Game Gallery</header>
+
+<div class="gallery">
+  <div class="game-card" onclick="launchGame('portgame.html')">1. Port Quiz</div>
+  <div class="game-card" onclick="launchGame('Binarygame.html')">2. Binary Blaster</div>
+  <div class="game-card" onclick="launchGame('subnetingchallage.html')">3. Subnet Puzzle</div>
+  <div class="game-card" onclick="launchGame('osimatch.html')">4. OSI Match</div>
+  <div class="game-card" onclick="launchGame('568ab.html')">5. Match TIA/EIA-568</div>
+  <div class="game-card" onclick="launchGame('mesh_network_game.html')">6. Mesh Network Quiz</div>
+  <div class="game-card" onclick="launchGame('network_class_identifier_game.html')">7. Network Class</div>
+  <div class="game-card" onclick="launchGame('wifi.html')">8.Wifi </div>
+  <div class="game-card" onclick="launchGame('trouble.html')">9. troubleshoot</div>
+  <div class="game-card" onclick="launchGame('fiber.html')">10. fiber types</div>
+</div>
+
+<div id="gameFrameWrapper">
+  <iframe id="gameFrame"></iframe>
+  <br>
+  <button class="back-btn" onclick="closeGame()">🔙 Back to Gallery</button>
+</div>
+
+<script>
+  function launchGame(gameURL) {
+    document.querySelector('.gallery').style.display = 'none';
+    const frame = document.getElementById('gameFrame');
+    frame.src = gameURL;
+    frame.style.display = 'block';
+    document.getElementById('gameFrameWrapper').style.display = 'block';
+  }
+
+  function closeGame() {
+    const frame = document.getElementById('gameFrame');
+    frame.src = '';
+    frame.style.display = 'none';
+    document.querySelector('.gallery').style.display = 'grid';
+    document.getElementById('gameFrameWrapper').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
